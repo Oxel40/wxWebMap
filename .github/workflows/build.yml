@@ -66,10 +66,10 @@ jobs:
      # Driving the environment variable `RUNVCPKG_NO_CACHE`, at the end of the workflow the  
      # `run-vcpkg` post step is instructed to not save anything when the workflow has been 
      # cancelled or it has failed.
-      - run: |
-          echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
-          if: ${{ failure() || cancelled() }}
-          shell: bash
+      #- run: |
+      #    echo "RUNVCPKG_NO_CACHE=1" >> $GITHUB_ENV
+      #    if: ${{ failure() || cancelled() }}
+      #    shell: bash
 
       - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
         uses: lukka/run-cmake@v10
