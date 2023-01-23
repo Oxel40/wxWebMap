@@ -33,16 +33,21 @@ jobs:
       # then vcpkg is bootstrapped. Since a the vcpkg.json is being used later on
       # to install the packages when `run-cmake` runs, no packages are installed at
       # this time.
-      - name: Restore artifacts, or setup vcpkg (do not install any package)
-        uses: lukka/run-vcpkg@v10
-        # with:
-        #   runVcpkgInstall: true
-
-      - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
-        uses: lukka/run-cmake@v10
-        with:
-          configurePreset: 'windows-x64-debug'
-          buildPreset: 'windows-x64-debug'
+#      - name: Restore artifacts, or setup vcpkg (do not install any package)
+#        uses: lukka/run-vcpkg@v10
+#        # with:
+#        #   runVcpkgInstall: true
+#
+#      - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
+#        uses: lukka/run-cmake@v10
+#        with:
+#          configurePreset: 'windows-x64-debug'
+#          buildPreset: 'windows-x64-debug'
+      - name: Generate CMake files
+        run: cmake . -DCMAKE_TOOLCHAIN_FILE="{{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      
+      - name: Build
+        run: cmake --build .
 
     #env:
     #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
