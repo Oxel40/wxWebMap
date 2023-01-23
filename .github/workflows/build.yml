@@ -43,8 +43,22 @@ jobs:
 #        with:
 #          configurePreset: 'windows-x64-debug'
 #          buildPreset: 'windows-x64-debug'
+      - name: Restore vcpkg Cache
+        id: cache-vcpkg-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: "/Users/runneradmin/AppData/Local/vcpkg/archives/"
+          key: "${{ matrix.config.os }}-vcpkg-cache"
+
       - name: Generate CMake files
         run: cmake . --preset windows-x64-release
+      
+      - name: Save vcpkg Cache
+        id: cache-vcpkg-save
+        uses: actions/cache/save@v3
+        with:
+          path: "/Users/runneradmin/AppData/Local/vcpkg/archives/"
+          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
       
       - name: Build
         run: cmake --build .
