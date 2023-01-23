@@ -25,7 +25,7 @@ jobs:
       #-uses: actions/cache@v1   <===== YOU DO NOT NEED THIS!
       
       - name: Create Binary Cache Directory
-        run: mkdir -r $VCPKG_DEFAULT_BINARY_CACHE
+        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE_DIR
         shell: bash
 
       # Install latest CMake.
@@ -72,6 +72,7 @@ jobs:
     #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
       VCPKG_ENABLE_METRICS: 1
       VCPKG_DEFAULT_BINARY_CACHE: "files,${{ github.workspace }}/out/vcpkg-cache"
+      VCPKG_DEFAULT_BINARY_CACHE_DIR: "${{ github.workspace }}/out/vcpkg-cache"
     #
     #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
     #  for the hosting system will be automatically choosen (x64 is the default on all 
