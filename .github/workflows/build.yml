@@ -67,7 +67,7 @@ jobs:
     #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
     #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
       VCPKG_ENABLE_METRICS: 1
-      VCPKG_BINARY_SOURCES: "${{ github.workspace }}/vcpkg/binary-cache/"
+      VCPKG_BINARY_SOURCES: "files,${{ github.workspace }}/out/vcpkg-cache/"
     #
     #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
     #  for the hosting system will be automatically choosen (x64 is the default on all 
