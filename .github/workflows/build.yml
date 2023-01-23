@@ -24,9 +24,9 @@ jobs:
           submodules: true
       #-uses: actions/cache@v1   <===== YOU DO NOT NEED THIS!
       
-      #- name: Create Binary Cache Directory
-      #  run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE_DIR
-      #  shell: bash
+      - name: Create Binary Cache Directory
+        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE_DIR
+        shell: bash
 
       # Install latest CMake.
       - uses: lukka/get-cmake@latest
