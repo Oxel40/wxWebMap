@@ -44,7 +44,7 @@ jobs:
 #          configurePreset: 'windows-x64-debug'
 #          buildPreset: 'windows-x64-debug'
       - name: Generate CMake files
-        run: cmake . -DCMAKE_TOOLCHAIN_FILE="{{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        run: cmake . -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       
       - name: Build
         run: cmake --build .
