@@ -51,7 +51,7 @@ jobs:
       #    key: "${{ matrix.config.os }}-vcpkg-cache"
 
       - name: Generate CMake files
-        run: cmake . --preset windows-x64-release
+        run: cmake . --preset windows-x64-release -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       
       #- name: Save vcpkg Cache
       #  id: cache-vcpkg-save
@@ -66,11 +66,10 @@ jobs:
     env:
     #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
     #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
-      VCPKG_ENABLE_METRICS: 1 
+      VCPKG_ENABLE_METRICS: 1
+      VCPKG_BINARY_SOURCES: "${{ github.workspace }}/vcpkg/binary-cache/"
     #
     #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
     #  for the hosting system will be automatically choosen (x64 is the default on all 
     #  platforms, e.g. `x64-osx`).
-    #  VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }} 
-      
-      CMAKE_TOOLCHAIN_FILE: "${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    #  VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
