@@ -55,7 +55,7 @@ jobs:
           key: "${{ matrix.config.os }}-vcpkg-cache"
 
       - name: Generate CMake files
-        run: cmake . --preset "${{ runner.os }}-x64-release" -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        run: cmake . --preset windows-x64-release -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       
       - name: Save vcpkg Cache
         id: cache-vcpkg-save
