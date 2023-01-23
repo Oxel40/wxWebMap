@@ -35,8 +35,8 @@ jobs:
       # this time.
       - name: Restore artifacts, or setup vcpkg (do not install any package)
         uses: lukka/run-vcpkg@v10
-        with:
-          # runVcpkgInstall: true
+        # with:
+        #   runVcpkgInstall: true
 
       - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
         uses: lukka/run-cmake@v10
