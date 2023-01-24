@@ -38,7 +38,7 @@ jobs:
         id: download
         uses: actions/download-artifact@v3
         with:
-          name: ${{ github.event.inputs.artifact-name }}
+          name: ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
           path: ./downloaded-artifacts
           
       - name: Create release
@@ -60,13 +60,13 @@ jobs:
 
       - name: Upload artifacts to release
         run: |
-          ls ${{ steps.download.outputs.download-path }}/artifact \
+          ls ${{ steps.download.outputs.download-path }}/${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }} \
           | xargs -I % sh -e -c " \
               curl -v \
               -X POST \
               -H 'Accept: application/vnd.github+json' \
               -H 'Authorization: Bearer ${{ github.token }}' \
               -H 'Content-Type: application/zip' \
-              --data-binary '@${{ steps.download.outputs.download-path }}/artifact/%' \
+              --data-binary '@${{ steps.download.outputs.download-path }}/${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}/%' \
               '$(cat uploads-url.txt)?name=%' \
               "
