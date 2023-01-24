@@ -76,6 +76,10 @@ jobs:
       
       - name: Build
         run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
+        
+      - name: TMP list
+        run: ls "${{ github.workspace }}\out\build" "${{ github.workspace }}\out\build\lib" "${{ github.workspace }}\out\build\bin"
+        shell: bash
       
       - name: Zip build artifacts
         if: ${{ runner.os != 'Windows' }}
