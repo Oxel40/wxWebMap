@@ -1,0 +1,12 @@
+name: I-CONIC Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: Oxel40/wxWebMap/.github/workflows/iconic-cmake-build.yml@main
+        
+  release:
+    needs: build
+    uses: Oxel40/wxWebMap/.github/workflows/iconic-release.yml@main
