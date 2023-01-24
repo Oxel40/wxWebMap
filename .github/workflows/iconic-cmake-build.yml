@@ -78,12 +78,12 @@ jobs:
         run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
         
       - name: List artifacts
-        run: ls"${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
+        run: ls "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
         shell: bash
       
       - name: Zip build artifacts
         if: ${{ runner.os != 'Windows' }}
-        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/lib ./out/build/bin
+        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/lib ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/bin
 
       - name: Zip build artifacts
         if: ${{ runner.os == 'Windows' }}
