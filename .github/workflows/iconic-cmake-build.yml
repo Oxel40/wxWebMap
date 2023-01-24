@@ -6,14 +6,14 @@ on:
       artifact-name:
         description: 'The name to upload the build artifacts under'
         default: 'build-artifact'
-        required: false
+        required: true
         type: string
   workflow_call:
     inputs:
       artifact-name:
         description: 'The name to upload the build artifacts under'
         default: 'build-artifact'
-        required: false
+        required: true
         type: string
 
 jobs:
