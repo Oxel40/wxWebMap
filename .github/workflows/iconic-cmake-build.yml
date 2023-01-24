@@ -67,7 +67,7 @@ jobs:
         uses: lukka/run-cmake@v10
         with:
           configurePreset: 'windows-x64-debug'
-          buildPreset: 'windows-x64-debug'
+          #buildPreset: 'windows-x64-debug'
 #      - name: Restore vcpkg cache
 #        id: cache-vcpkg-restore
 #        uses: actions/cache/restore@v3
@@ -110,7 +110,7 @@ jobs:
     env:
       CMAKE_TOOLCHAIN_FILE: "${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       VCPKG_ENABLE_METRICS: 0
-      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
+      #VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
       # Don't know if this works but it's needed for bigger project to not eat up all space
       VCPKG_INSTALL_OPTIONS: "--clear-after-build"
     #
