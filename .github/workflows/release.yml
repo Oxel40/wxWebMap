@@ -1,0 +1,74 @@
+name: I-CONIC Make Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact-name:
+        description: 'The name of the artifact to make into a release'
+        default: 'build-artifact'
+        required: true
+        type: string
+      release-title:
+        description: 'The title of the release'
+        default: ${{ github.ref_name }}-${{ github.run_number }}
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'The name of the artifact to make into a release'
+        default: 'build-artifact'
+        required: true
+        type: string
+      release-title:
+        description: 'The title of the release'
+        default: ${{ github.ref_name }}-${{ github.run_number }}
+        required: true
+        type: string
+
+jobs:
+  create_release:
+    name: Create release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Get json parser
+        run: npm install -g json
+        
+      - name: Download artifacts
+        id: download
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ github.event.inputs.artifact-name }}
+          path: ./downloaded-artifacts
+          
+      - name: Create release
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ github.token }}" \
+          https://api.github.com/repos/${{ github.repository }}/releases \
+          -d '{"tag_name":"${{ github.event.inputs.release-title }},"draft":false,"prerelease":false,"generate_release_notes":false}' \
+          | json assets_url | sed 's/api/uploads/' > uploads-url.txt
+
+      - name: List assets
+        run: |
+          ls ${{ steps.download.outputs.download-path }} \
+          | xargs -I % sh -e -c " \
+              du -ha '${{ steps.download.outputs.download-path }}/%' \
+              "
+
+      - name: Upload artifacts to release
+        run: |
+          ls ${{ steps.download.outputs.download-path }}/artifact \
+          | xargs -I % sh -e -c " \
+              curl -v \
+              -X POST \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'Authorization: Bearer ${{ github.token }}' \
+              -H 'Content-Type: application/zip' \
+              --data-binary '@${{ steps.download.outputs.download-path }}/artifact/%' \
+              '$(cat uploads-url.txt)?name=%' \
+              "
