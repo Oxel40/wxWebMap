@@ -6,7 +6,7 @@ on:
       artifact-name:
         description: 'The name of the artifact to make into a release'
         default: 'build-artifact'
-        required: true
+        required: false
         type: string
       release-title:
         description: 'The title of the release'
@@ -17,7 +17,7 @@ on:
       artifact-name:
         description: 'The name of the artifact to make into a release'
         default: 'build-artifact'
-        required: true
+        required: false
         type: string
       release-title:
         description: 'The title of the release'
