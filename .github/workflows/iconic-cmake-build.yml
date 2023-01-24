@@ -23,7 +23,7 @@ jobs:
       max-parallel: 2
       matrix:
         config:
-          # - os: ubuntu-latest
+          - os: ubuntu-latest
           # - os: macos-latest
           - os: windows-latest
     steps:
