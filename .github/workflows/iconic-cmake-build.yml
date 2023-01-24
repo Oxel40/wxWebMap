@@ -30,7 +30,7 @@ jobs:
           - os: windows-latest
     steps:
       - name: Artifact name
-        run: echo ${{ github.event.inputs.artifact-name }}
+        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
         shell: bash
         
       - name: OS name
@@ -103,7 +103,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.inputs.artifact-name }}
+          name: ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
           path: iconic-deps-${{ matrix.config.os }}.zip
           if-no-files-found: error 
 
