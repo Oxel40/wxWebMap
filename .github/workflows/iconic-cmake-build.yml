@@ -29,9 +29,9 @@ jobs:
           # - os: macos-latest
           - os: windows-latest
     steps:
-      - name: Artifact name
-        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
-        shell: bash
+#      - name: Artifact name
+#        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
+#        shell: bash
         
       - name: OS name
         id: os-name
@@ -58,35 +58,35 @@ jobs:
       # then vcpkg is bootstrapped. Since a the vcpkg.json is being used later on
       # to install the packages when `run-cmake` runs, no packages are installed at
       # this time.
-#      - name: Restore artifacts, or setup vcpkg (do not install any package)
-#        uses: lukka/run-vcpkg@v10
-#        # with:
-#        #   runVcpkgInstall: true
-#
-#      - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
-#        uses: lukka/run-cmake@v10
-#        with:
-#          configurePreset: 'windows-x64-debug'
-#          buildPreset: 'windows-x64-debug'
-      - name: Restore vcpkg cache
-        id: cache-vcpkg-restore
-        uses: actions/cache/restore@v3
-        with:
-          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: "${{ matrix.config.os }}-vcpkg-cache"
+      - name: Restore artifacts, or setup vcpkg (do not install any package)
+        uses: lukka/run-vcpkg@v10
+        # with:
+        #   runVcpkgInstall: true
 
-      - name: Generate CMake files
-        run: cmake --preset ${{ steps.os-name.outputs.lower-case }}-x64-release
-      
-      - name: Save vcpkg cache
-        id: cache-vcpkg-save
-        uses: actions/cache/save@v3
+      - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
+        uses: lukka/run-cmake@v10
         with:
-          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+          configurePreset: 'windows-x64-debug'
+          buildPreset: 'windows-x64-debug'
+#      - name: Restore vcpkg cache
+#        id: cache-vcpkg-restore
+#        uses: actions/cache/restore@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: "${{ matrix.config.os }}-vcpkg-cache"
+
+#      - name: Generate CMake files
+#        run: cmake --preset ${{ steps.os-name.outputs.lower-case }}-x64-release
       
-      - name: Build
-        run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
+#      - name: Save vcpkg cache
+#        id: cache-vcpkg-save
+#        uses: actions/cache/save@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+      
+#      - name: Build
+#        run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
         
       - name: List artifacts
         run: ls "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
