@@ -106,7 +106,7 @@ jobs:
 
       - name: Zip build artifacts (Windows)
         if: ${{ runner.os == 'Windows' }}
-        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib", "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin" -DestinationPath "${{ github.workspace }}\${{ matrix.os }}-${{ matrix.target }}.zip.zip"
+        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib", "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin" -DestinationPath "${{ github.workspace }}\${{ matrix.os }}-${{ matrix.target }}.zip"
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
