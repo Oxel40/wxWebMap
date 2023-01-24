@@ -19,17 +19,18 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.config.os }} # we run many different builds
+    runs-on: ${{ matrix.os }} # we run many different builds
     strategy:
-      # just an example matrix
-      max-parallel: 2
+      max-parallel: 4
       matrix:
-        config:
-          # - os: ubuntu-latest
-          # - os: macos-latest
-          - os: windows-latest
-          - build-type: release
-          - build-type: debug
+        # os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
+        target: [debug, release]
+        # - os: ubuntu-latest
+        # - os: macos-latest
+        # - os: windows-latest
+        # - build-type: release
+        # - build-type: debug
     steps:
 #      - name: Artifact name
 #        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
@@ -42,7 +43,7 @@ jobs:
       
       - name: Target name
         id: target-name
-        run: echo "name=${{ steps.os-name.outputs.lower-case }}-x64-${{ matrix.config.build-type }}" >> $GITHUB_OUTPUT
+        run: echo "name=${{ steps.os-name.outputs.lower-case }}-x64-${{ matrix.target }}" >> $GITHUB_OUTPUT
         shell: bash
         
       - name: Checkout repository
@@ -99,19 +100,19 @@ jobs:
         run: ls "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib" "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin"
         shell: bash
       
-      - name: Zip build artifacts (Windows)
-        if: ${{ runner.os != 'Windows' }}
-        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.target-name.outputs.name }}/lib ./out/build/${{ steps.target-name.outputs.name }}/bin
-
       - name: Zip build artifacts (Unix)
+        if: ${{ runner.os != 'Windows' }}
+        run: zip -r ${{ matrix.os }}-${{ matrix.target }}.zip ./out/build/${{ steps.target-name.outputs.name }}/lib ./out/build/${{ steps.target-name.outputs.name }}/bin
+
+      - name: Zip build artifacts (Windows)
         if: ${{ runner.os == 'Windows' }}
-        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib", "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
+        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib", "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin" -DestinationPath "${{ github.workspace }}\${{ matrix.os }}-${{ matrix.target }}.zip.zip"
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
-          path: iconic-deps-${{ matrix.config.os }}.zip
+          path: ${{ matrix.os }}-${{ matrix.target }}.zip
           if-no-files-found: error 
 
     env:
