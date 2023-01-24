@@ -1,0 +1,120 @@
+name: I-CONIC CMake Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact-name:
+        description: 'The name to upload the build artifacts under'
+        default: 'build-artifact'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'The name to upload the build artifacts under'
+        default: 'build-artifact'
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.config.os }} # we run many different builds
+    strategy:
+      # just an example matrix
+      max-parallel: 2
+      matrix:
+        config:
+          # - os: ubuntu-latest
+          # - os: macos-latest
+          - os: windows-latest
+    steps:
+#      - name: Artifact name
+#        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
+#        shell: bash
+        
+      - name: OS name
+        id: os-name
+        run: echo "lower-case=$( echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]' )" >> $GITHUB_OUTPUT
+        shell: bash
+        
+      - name: Checkout repository
+        uses: actions/checkout@v2.5.0
+        with:
+          submodules: true
+      #-uses: actions/cache@v1   <===== YOU DO NOT NEED THIS!
+      
+#      - name: Create Binary Cache Directory
+#        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+#        shell: bash
+
+      # Install latest CMake.
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+      # Or pin to a specific CMake version:
+      # lukka/get-cmake@v3.21.2
+
+      # Restore from cache the previously built ports. If a "cache miss" occurs,
+      # then vcpkg is bootstrapped. Since a the vcpkg.json is being used later on
+      # to install the packages when `run-cmake` runs, no packages are installed at
+      # this time.
+      - name: Restore artifacts, or setup vcpkg (do not install any package)
+        uses: lukka/run-vcpkg@v10
+        # with:
+        #   runVcpkgInstall: true
+
+      - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'windows-x64-debug'
+          #buildPreset: 'windows-x64-debug'
+#      - name: Restore vcpkg cache
+#        id: cache-vcpkg-restore
+#        uses: actions/cache/restore@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: "${{ matrix.config.os }}-vcpkg-cache"
+
+#      - name: Generate CMake files
+#        run: cmake --preset ${{ steps.os-name.outputs.lower-case }}-x64-release
+      
+#      - name: Save vcpkg cache
+#        id: cache-vcpkg-save
+#        uses: actions/cache/save@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+      
+#      - name: Build
+#        run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
+        
+      - name: List artifacts
+        run: ls "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
+        shell: bash
+      
+      - name: Zip build artifacts (Windows)
+        if: ${{ runner.os != 'Windows' }}
+        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/lib ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/bin
+
+      - name: Zip build artifacts (Unix)
+        if: ${{ runner.os == 'Windows' }}
+        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib", "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
+          path: iconic-deps-${{ matrix.config.os }}.zip
+          if-no-files-found: error 
+
+    env:
+      CMAKE_TOOLCHAIN_FILE: "${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      VCPKG_ENABLE_METRICS: 0
+      #VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
+      # Don't know if this works but it's needed for bigger project to not eat up all space
+      VCPKG_INSTALL_OPTIONS: "--clear-after-build"
+    #
+    #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
+    #  for the hosting system will be automatically choosen (x64 is the default on all 
+    #  platforms, e.g. `x64-osx`).
+    #  VCPKG_DEFAULT_TRIPLET: ${{ matrix.triplet }}
