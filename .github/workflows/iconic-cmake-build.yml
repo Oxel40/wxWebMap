@@ -1,14 +1,13 @@
-name: Test Build
+name: Iconic CMake Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-#  workflow_call:
-#    inputs:
-#      config-path:
-#        required: true
-#        type: string
+  workflow_call:
+    inputs:
+      artifact-name:
+        default: 'build-artifact'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -23,12 +22,12 @@ jobs:
           # - os: macos-latest
           - os: windows-latest
     steps:
-      - name: OS Name
+      - name: OS name
         id: os-name
         run: echo "lower-case=$( echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]' )" >> $GITHUB_OUTPUT
         shell: bash
         
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2.5.0
         with:
           submodules: true
@@ -39,7 +38,8 @@ jobs:
 #        shell: bash
 
       # Install latest CMake.
-      - uses: lukka/get-cmake@latest
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
       # Or pin to a specific CMake version:
       # lukka/get-cmake@v3.21.2
 
@@ -57,7 +57,7 @@ jobs:
 #        with:
 #          configurePreset: 'windows-x64-debug'
 #          buildPreset: 'windows-x64-debug'
-      - name: Restore vcpkg Cache
+      - name: Restore vcpkg cache
         id: cache-vcpkg-restore
         uses: actions/cache/restore@v3
         with:
@@ -67,7 +67,7 @@ jobs:
       - name: Generate CMake files
         run: cmake --preset ${{ steps.os-name.outputs.lower-case }}-x64-release
       
-      - name: Save vcpkg Cache
+      - name: Save vcpkg cache
         id: cache-vcpkg-save
         uses: actions/cache/save@v3
         with:
@@ -76,6 +76,17 @@ jobs:
       
       - name: Build
         run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
+      
+      - name: Zip build artifacts
+        run: zip ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/lib ./out/build/bin
+        shell: bash
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.atrifact-name }}
+          path: iconic-deps-${{ matrix.config.os }}.zip
+          if-no-files-found: error 
 
     env:
       CMAKE_TOOLCHAIN_FILE: "${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
