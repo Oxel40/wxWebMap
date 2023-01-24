@@ -4,12 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       artifact-name:
+        description: 'The name to upload the build artifacts under'
         default: 'build-artifact'
         required: false
         type: string
   workflow_call:
     inputs:
       artifact-name:
+        description: 'The name to upload the build artifacts under'
         default: 'build-artifact'
         required: false
         type: string
@@ -23,10 +25,14 @@ jobs:
       max-parallel: 2
       matrix:
         config:
-          - os: ubuntu-latest
+          # - os: ubuntu-latest
           # - os: macos-latest
           - os: windows-latest
     steps:
+      - name: Artifact name
+        run: echo ${{ inputs.atrifact-name }}
+        shell: bash
+        
       - name: OS name
         id: os-name
         run: echo "lower-case=$( echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]' )" >> $GITHUB_OUTPUT
@@ -97,7 +103,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifact # ${{ inputs.atrifact-name }}
+          name: ${{ inputs.atrifact-name }}
           path: iconic-deps-${{ matrix.config.os }}.zip
           if-no-files-found: error 
 
