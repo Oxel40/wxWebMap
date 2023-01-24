@@ -1,4 +1,4 @@
-name: Iconic CMake Build
+name: I-CONIC CMake Build
 
 on:
   workflow_dispatch:
