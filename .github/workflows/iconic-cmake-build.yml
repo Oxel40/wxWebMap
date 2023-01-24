@@ -28,6 +28,8 @@ jobs:
           # - os: ubuntu-latest
           # - os: macos-latest
           - os: windows-latest
+          - build-type: release
+          - build-type: debug
     steps:
 #      - name: Artifact name
 #        run: echo ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
@@ -36,6 +38,11 @@ jobs:
       - name: OS name
         id: os-name
         run: echo "lower-case=$( echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]' )" >> $GITHUB_OUTPUT
+        shell: bash
+      
+      - name: Target name
+        id: target-name
+        run: echo "name=${{ steps.os-name.outputs.lower-case }}-x64-${{ matrix.config.build-type }}" >> $GITHUB_OUTPUT
         shell: bash
         
       - name: Checkout repository
@@ -66,8 +73,8 @@ jobs:
       - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
         uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'windows-x64-debug'
-          buildPreset: 'windows-x64-debug'
+          configurePreset: ${{ steps.target-name.outputs.name }}
+          buildPreset: ${{ steps.target-name.outputs.name }}
 #      - name: Restore vcpkg cache
 #        id: cache-vcpkg-restore
 #        uses: actions/cache/restore@v3
@@ -89,16 +96,16 @@ jobs:
 #        run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
         
       - name: List artifacts
-        run: ls "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
+        run: ls "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib" "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin"
         shell: bash
       
       - name: Zip build artifacts (Windows)
         if: ${{ runner.os != 'Windows' }}
-        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/lib ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/bin
+        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.target-name.outputs.name }}/lib ./out/build/${{ steps.target-name.outputs.name }}/bin
 
       - name: Zip build artifacts (Unix)
         if: ${{ runner.os == 'Windows' }}
-        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib", "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
+        run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\lib", "${{ github.workspace }}\out\build\${{ steps.target-name.outputs.name }}\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
