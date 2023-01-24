@@ -55,7 +55,7 @@ jobs:
 #          key: "${{ matrix.config.os }}-vcpkg-cache"
 
       - name: Generate CMake files
-        run: cmake . --preset windows-x64-release -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        run: cmake . -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" --preset windows-x64-release
       
 #      - name: Save vcpkg Cache
 #        id: cache-vcpkg-save
@@ -67,10 +67,10 @@ jobs:
       - name: Build
         run: cmake --build .
 
-    env:
+#    env:
     #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
     #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
-      VCPKG_ENABLE_METRICS: 0
+#      VCPKG_ENABLE_METRICS: 0
 #      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
 #      VCPKG_INSTALL_OPTIONS: --clear-after-build
     #
