@@ -92,11 +92,11 @@ jobs:
         run: ls "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib" "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin"
         shell: bash
       
-      - name: Zip build artifacts
+      - name: Zip build artifacts (Windows)
         if: ${{ runner.os != 'Windows' }}
         run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/lib ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release/bin
 
-      - name: Zip build artifacts
+      - name: Zip build artifacts (Unix)
         if: ${{ runner.os == 'Windows' }}
         run: Compress-Archive -Path "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\lib", "${{ github.workspace }}\out\build\${{ steps.os-name.outputs.lower-case }}-x64-release\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
         
