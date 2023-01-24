@@ -78,8 +78,17 @@ jobs:
         run: cmake --build ./out/build/${{ steps.os-name.outputs.lower-case }}-x64-release
       
       - name: Zip build artifacts
-        run: zip ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/lib ./out/build/bin
-        shell: bash
+        if: ${{ runner.os != 'Windows' }}
+        run: zip -r ${{ github.repository }}-${{ matrix.config.os }}.zip ./out/build/lib ./out/build/bin
+
+      - name: Zip build artifacts
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          Compress-Archive @{
+            Path = "${{ github.workspace }}\out\build\lib", "${{ github.workspace }}\out\build\bin"
+            CompressionLevel = "Optimal"
+            DestinationPath = "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
+          }
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
