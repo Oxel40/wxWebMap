@@ -83,12 +83,7 @@ jobs:
 
       - name: Zip build artifacts
         if: ${{ runner.os == 'Windows' }}
-        run: |
-          Compress-Archive @{ `
-            Path = "${{ github.workspace }}\out\build\lib", "${{ github.workspace }}\out\build\bin" `
-            CompressionLevel = "Optimal" `
-            DestinationPath = "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip" `
-          }
+        run: Compress-Archive -Path "${{ github.workspace }}\out\build\lib" "${{ github.workspace }}\out\build\bin" -DestinationPath "${{ github.workspace }}\iconic-deps-${{ matrix.config.os }}.zip"
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
