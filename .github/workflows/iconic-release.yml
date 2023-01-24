@@ -10,7 +10,6 @@ on:
         type: string
       release-title:
         description: 'The title of the release'
-        default: ${{ github.ref_name }}-${{ github.run_number }}
         required: true
         type: string
   workflow_call:
@@ -22,7 +21,6 @@ on:
         type: string
       release-title:
         description: 'The title of the release'
-        default: ${{ github.ref_name }}-${{ github.run_number }}
         required: true
         type: string
 
