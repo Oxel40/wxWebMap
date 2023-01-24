@@ -2,6 +2,11 @@ name: Iconic CMake Build
 
 on:
   workflow_dispatch:
+    inputs:
+      artifact-name:
+        default: 'build-artifact'
+        required: false
+        type: string
   workflow_call:
     inputs:
       artifact-name:
