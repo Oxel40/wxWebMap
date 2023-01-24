@@ -24,9 +24,9 @@ jobs:
           submodules: true
       #-uses: actions/cache@v1   <===== YOU DO NOT NEED THIS!
       
-      - name: Create Binary Cache Directory
-        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
-        shell: bash
+#      - name: Create Binary Cache Directory
+#        run: mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+#        shell: bash
 
       # Install latest CMake.
       - uses: lukka/get-cmake@latest
@@ -47,22 +47,22 @@ jobs:
 #        with:
 #          configurePreset: 'windows-x64-debug'
 #          buildPreset: 'windows-x64-debug'
-      - name: Restore vcpkg Cache
-        id: cache-vcpkg-restore
-        uses: actions/cache/restore@v3
-        with:
-          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: "${{ matrix.config.os }}-vcpkg-cache"
+#      - name: Restore vcpkg Cache
+#        id: cache-vcpkg-restore
+#        uses: actions/cache/restore@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: "${{ matrix.config.os }}-vcpkg-cache"
 
       - name: Generate CMake files
         run: cmake . --preset windows-x64-release -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       
-      - name: Save vcpkg Cache
-        id: cache-vcpkg-save
-        uses: actions/cache/save@v3
-        with:
-          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
-          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+#      - name: Save vcpkg Cache
+#        id: cache-vcpkg-save
+#        uses: actions/cache/save@v3
+#        with:
+#          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+#          key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
       
       - name: Build
         run: cmake --build .
@@ -71,8 +71,8 @@ jobs:
     #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
     #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
       VCPKG_ENABLE_METRICS: 0
-      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
-      VCPKG_INSTALL_OPTIONS: --clear-after-build
+#      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
+#      VCPKG_INSTALL_OPTIONS: --clear-after-build
     #
     #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
     #  for the hosting system will be automatically choosen (x64 is the default on all 
