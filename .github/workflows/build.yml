@@ -55,7 +55,7 @@ jobs:
           key: "${{ matrix.config.os }}-vcpkg-cache"
 
       - name: Generate CMake files
-        run: cmake . -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake" # --preset windows-x64-release
+        run: cmake --preset windows-x64-release
       
       - name: Save vcpkg Cache
         id: cache-vcpkg-save
@@ -65,14 +65,14 @@ jobs:
           key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
       
       - name: Build
-        run: cmake --build .
+        run: cmake --build ./out/build/windows-x64-release
 
     env:
-    #  By default the action disables vcpkg's telemetry by defining VCPKG_DISABLE_METRICS. 
-    #  This behavior can be disabled by defining `VCPKG_ENABLE_METRICS` as follows.
+      CMAKE_TOOLCHAIN_FILE: "${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
       VCPKG_ENABLE_METRICS: 0
       VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/out/vcpkg-cache"
-      VCPKG_INSTALL_OPTIONS: --clear-after-build
+      # Don't know if this works but it's needed for bigger project to not eat up all space
+      VCPKG_INSTALL_OPTIONS: "--clear-after-build"
     #
     #  [OPTIONAL] Define the vcpkg's triplet you want to enforce, otherwise the default one
     #  for the hosting system will be automatically choosen (x64 is the default on all 
