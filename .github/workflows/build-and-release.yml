@@ -10,3 +10,5 @@ jobs:
   release:
     needs: build
     uses: Oxel40/wxWebMap/.github/workflows/iconic-release.yml@main
+    with:
+      release-title: ${{github.repository }}-${{ github.ref_name }}-${{ github.run_number }}
