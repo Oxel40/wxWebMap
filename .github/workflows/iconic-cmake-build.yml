@@ -41,20 +41,30 @@ jobs:
         with:
           submodules: true
 
-      - name: Clone vcpkg
-        uses: actions/checkout@v2
-        with:
-          repository: I-CONIC-Vision-AB/vcpkg
-          path: ${{ github.workspace }}/vcpkg
-
       - name: Install CMake
         uses: lukka/get-cmake@latest
 
+      - name: Get json parser
+        run: npm install -g json
+
+      - name: Get latest vcpkg commit hash
+        id: vcpkg-hash
+        run: |
+          curl -v \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ github.token }}" \
+          https://api.github.com/repos/I-CONIC-Vision-AB/vcpkg/branches/master \
+          | json commit.sha | awk '{print "sha="$0}' >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Restore artifacts, or setup vcpkg (do not install any package)
         uses: lukka/run-vcpkg@v10
-        #with:
+        with:
           # Run vcpkg now to ensure that --clean-after-build is used (https://github.com/lukka/run-vcpkg/blob/main/action.yml)
           #runVcpkgInstall: true
+          vcpkgGitURL: "https://github.com/I-CONIC-Vision-AB/vcpkg.git"
+          vcpkgGitCommitId: ${{ steps.vcpkg-hash.sha }}
 
       - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
         uses: lukka/run-cmake@v10
