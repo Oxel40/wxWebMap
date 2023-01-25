@@ -46,11 +46,12 @@ jobs:
 
       - name: Get json parser
         run: npm install -g json
+        shell: bash
 
       - name: Get latest vcpkg commit hash
         id: vcpkg-hash
         run: |
-          curl -v \
+          curl \
           -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ github.token }}" \
