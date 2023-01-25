@@ -47,18 +47,29 @@ jobs:
       - name: Get json parser
         run: npm install -g json
         shell: bash
+      
+      - name: Curl test
+        run: |
+          curl \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ github.token }}" \
+          https://api.github.com/repos/I-CONIC-Vision-AB/vcpkg/branches/master
+        shell: bash
 
       - name: Get latest vcpkg commit hash
         id: vcpkg-hash
         run: |
-          (curl \
+          curl \
           -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ github.token }}" \
           https://api.github.com/repos/I-CONIC-Vision-AB/vcpkg/branches/master \
-          > $tmp.1) && \
-          (cat $tmp.1 | echo) && \
-          (cat $tmp.1 | json commit.sha | awk '{print "sha="$0}' >> $GITHUB_OUTPUT)
+          | json commit.sha | awk '{print "sha="$0}' >> $GITHUB_OUTPUT)
+        shell: bash
+      
+      - name: echo
+        run: echo ${{ steps.vcpkg-hash.outputs.sha }}
         shell: bash
 
       - name: Restore artifacts, or setup vcpkg (do not install any package)
