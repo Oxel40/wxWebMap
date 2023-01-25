@@ -48,7 +48,7 @@ jobs:
       
       - name: Install repository dependencies (Linux)
         if: ${{ runner.os == 'Linux' }}
-        run: sudo apt-get install libdbus-1 libxi-dev libxtst-dev
+        run: sudo apt-get install libdbus-1-dev libxi-dev libxtst-dev
         
       - name: Checkout repository
         uses: actions/checkout@v2.5.0
