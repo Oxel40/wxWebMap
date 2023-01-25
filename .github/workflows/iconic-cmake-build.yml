@@ -45,6 +45,10 @@ jobs:
         id: target-name
         run: echo "name=${{ steps.os-name.outputs.lower-case }}-x64-${{ matrix.target }}" >> $GITHUB_OUTPUT
         shell: bash
+      
+      - name: Install repository dependencies (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: sudo apt-get install libdbus-1 libxi-dev libxtst-dev
         
       - name: Checkout repository
         uses: actions/checkout@v2.5.0
