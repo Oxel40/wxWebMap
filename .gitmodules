@@ -1,3 +1,0 @@
-[submodule "vcpkg"]
-	path = vcpkg
-	url = git@github.com:I-CONIC-Vision-AB/vcpkg.git
