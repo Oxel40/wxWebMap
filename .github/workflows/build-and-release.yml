@@ -2,6 +2,9 @@ name: I-CONIC Build and Release
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
