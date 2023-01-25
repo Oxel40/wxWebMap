@@ -51,7 +51,6 @@ jobs:
       - name: Curl test
         run: |
           curl \
-          -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ github.token }}" \
           https://api.github.com/repos/I-CONIC-Vision-AB/vcpkg/branches/master
@@ -61,7 +60,6 @@ jobs:
         id: vcpkg-hash
         run: |
           curl \
-          -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ github.token }}" \
           https://api.github.com/repos/I-CONIC-Vision-AB/vcpkg/branches/master \
