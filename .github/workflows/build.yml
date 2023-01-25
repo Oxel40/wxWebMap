@@ -1,0 +1,11 @@
+name: I-CONIC Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:    
+      - main
+
+jobs:
+  build:
+    uses: Oxel40/wxWebMap/.github/workflows/iconic-cmake-build.yml@main
