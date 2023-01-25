@@ -8,6 +8,7 @@ on:
         default: 'build-artifact'
         required: false
         type: string
+      
   workflow_call:
     inputs:
       artifact-name:
@@ -75,6 +76,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
+          # GitHub semingly can't decide which variable to put the input arguments into
           name: ${{ github.event.inputs.artifact-name }}${{ inputs.artifact-name }}
           path: ${{ matrix.os }}-${{ matrix.target }}.zip
           if-no-files-found: error 
