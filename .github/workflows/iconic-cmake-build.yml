@@ -42,7 +42,10 @@ jobs:
           submodules: true
 
       - name: Clone vcpkg
-        run: git clone git@github.com:I-CONIC-Vision-AB/vcpkg.git
+        uses: actions/checkout@v2
+        with:
+          repository: I-CONIC-Vision-AB/vcpkg
+          path: ${{ github.workspace }}/vcpkg
 
       - name: Install CMake
         uses: lukka/get-cmake@latest
