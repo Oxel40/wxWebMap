@@ -65,7 +65,7 @@ jobs:
           # Run vcpkg now to ensure that --clean-after-build is used (https://github.com/lukka/run-vcpkg/blob/main/action.yml)
           #runVcpkgInstall: true
           vcpkgGitURL: "https://github.com/I-CONIC-Vision-AB/vcpkg.git"
-          vcpkgGitCommitId: ${{ steps.vcpkg-hash.sha }}
+          vcpkgGitCommitId: ${{ steps.vcpkg-hash.outputs.sha }}
 
       - name: Run CMake consuming CMakePreset.json and vcpkg.json by mean of vcpkg.
         uses: lukka/run-cmake@v10
