@@ -1,13 +1,21 @@
 # GitHub Actions in wxWebMap and other I-CONIC repositories
 Actions consists of workflows who intern defines what jobs/steps needs to be run.
 
+## Current status
+Currently is the repository `Oxel40/wxWebMap` has a working setup with github actions for building and creating releases. On each push to the master branch, wxWebMap will be built and packaged into a release for windows-release and windows-debug. On each pull request will the build be run for both windows-debug and windows-release as a check that needs to be passed in order to merge the pull request.
+
+Only some minor changes are needed (see [Steps to setup](#steps-to-setup)) to get these workflows to work with the official wxWebMap and potentially other repositories like API and studio.
+
+Adding Linux (Ubuntu) and MacOS is a trivial change to the build scripts, but some work is required to get these fully up and running (should only be a dependency issue for Linux, see bellow in [Notes](#notes)).
+
 ## Steps to setup
 
 1. Add buildPresets to `CMakePresets.json`
-2. Copy workflow files found in `.github/workflows/` to the desired repository.
+2. Add `vcpkg.json`
+3. Copy workflow files found in `.github/workflows/` to the desired repository.
 
 ### Build Presets
-As mentioned, buildPresets needs to be added to `CMakePresets.json` (used by `lukka/run-cmake` etc.). This can (as in this case) be as simple as modifying the `CMakePresets.json` file like this:
+As mentioned, buildPresets needs to be added to `CMakePresets.json` (used by `lukka/run-cmake` etc. and if you run cmake from the terminal). This can (as in this case) be as simple as modifying the `CMakePresets.json` file like this:
 
 ```json
 {
@@ -36,6 +44,23 @@ As mentioned, buildPresets needs to be added to `CMakePresets.json` (used by `lu
       "configurePreset": "linux-x64-release"
     }
   ]
+}
+```
+
+### `vcpkg.json`
+on the root of the repository (or rather cmake project), add a `vcpkg.json` that describes all dependencies needed to build the project. This is how that file could look like for wxWebMap:
+
+```json
+{
+    "name": "wxwebmap",
+    "version-string": "1.3.1",
+    "dependencies": [
+		{
+			"name": "wxwidgets",
+			"default-features": true,
+			"features": [ "webview" ]
+		}
+    ]
 }
 ```
 
@@ -71,8 +96,8 @@ Just some stuff worth mentioning.
 ### vcpkg as submodule
 To keep the development and remote build environment consistent does `lukka/run-vcpkg` recommend using vcpkg as a sub-module, resulting in the same git commit being the base for both local and remote builds. This might not be desired for us and thus is the latest version of `I-CONIC-Vision-AB/vcpkg` used instead by cloning the repository in `iconic-cmake-build.yml`.
 
-### Adding a vcpkg.json to all repositories
-Adding a vcpkg.json file with all dependencies to the root of each repository might be a good thing to do. This allows us to unify dependency installation, instead of using the two current different shell scripts located in the vcpkg repository. Having a vcpkg.json in the root of the repository will (in my experience) integrate with visual studio who automatically installs (using vcpkg) and checks for all dependencies listed in this file, and running e.g. `cmake -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" --preset linux-x64-release` will also install all dependencies specified in vcpkg.json. I'd argue that this approach makes our dependency management easier to handle (no need to tell everyone to install a new library if the dependencies change, just commit and push the vcpkg.json) and more declarative.
+### Adding a `vcpkg.json` to all repositories
+Adding a `vcpkg.json` file with all dependencies to the root of each repository might be a good thing to do. This allows us to unify dependency installation, instead of using the two current different shell scripts located in the vcpkg repository. Having a `vcpkg.json` in the root of the repository will (in my experience) integrate with visual studio who automatically installs (using vcpkg) and checks for all dependencies listed in this file, and running e.g. `cmake -DCMAKE_TOOLCHAIN_FILE="$PWD/vcpkg/scripts/buildsystems/vcpkg.cmake" --preset linux-x64-release` will also install all dependencies specified in `vcpkg.json`. I'd argue that this approach makes our dependency management easier to handle (no need to tell everyone to install a new library if the dependencies change, just commit and push the `vcpkg.json`) and more declarative.
 
 ### Reduce the amount of boost dependencies
 Boost is a huge library with many many different components, many of which we don't use. A good idea might be to only install the necessary parts of the boost library, this is mainly to reduce build time (or rather dependency build time) in the future GitHub actions responsible for building API and studio. Some work has already started on moving the usage of e.g. `boost::smart_ptr` to `std::smart_ptr`, with could further reduce the dependency on boost libraries.
